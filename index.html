@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<title>RoadVision AI | Intelligent Traffic Monitor</title>
+<meta name="description" content="Phone-camera vehicle detection and speed estimation with GPS, motion sensors and a Middle East vehicle catalog (2000–2026).">
+<meta name="theme-color" content="#0a0c0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/svg+xml" href="./icons/icon.svg">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="preload" href="./fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="./vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12 19 5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+    <symbol id="i-map" viewBox="0 0 24 24"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2ZM9 4v14M15 6v14"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></symbol>
+    <symbol id="i-cam" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m0 0L7 9m5-5 5 5M4 20h16"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM4 12h16M12 4v16"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></symbol>
+    <symbol id="i-snap" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 15 5-4 4 3 3-2 6 5"/></symbol>
+    <symbol id="i-gps" viewBox="0 0 24 24"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-compass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01"/></symbol>
+    <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/></symbol>
+    <symbol id="i-motion" viewBox="0 0 24 24"><path d="M3 12h3l2-6 4 12 2-6h7"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v12m0 0 5-5m-5 5-5-5M4 20h16"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2M7 14h10v7H7z"/></symbol>
+    <symbol id="i-flash" viewBox="0 0 24 24"><path d="M7 2h10l-3 8h5L8 22l2-9H6l1-11Z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9 4.6-.6 8-4 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM14 6l4 4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></symbol>
+    <symbol id="i-rot" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.2L3 16M3 21v-5h5"/></symbol>
+  </defs>
+</svg>
+
+<div id="app">
+  <header class="top">
+    <div class="brand">
+      <div class="logo"><img src="icons/icon.svg" alt="RoadVision AI logo" width="38" height="38" /></div>
+      <div><h1>RoadVision <span style="color:var(--amber)">AI</span></h1><small>Phone speed radar · © Ibtasam</small></div>
+    </div>
+    <div class="sp"></div>
+    <span class="chip" id="gpsChip"><i class="dot" id="gpsDot"></i><b id="gpsTxt">GPS off</b></span>
+    <span class="chip" id="netChip" style="display:none"><i class="dot on" id="netDot"></i><b id="netTxt">Online</b></span>
+    <button class="btn sm" id="installBtn" style="display:none"><svg class="ic sm"><use href="#i-dl"/></svg>Install</button>
+    <button class="btn sm" id="themeBtn" title="Cycle visual themes" aria-label="Toggle theme"><svg class="ic sm"><use href="#i-sun"/></svg></button><select id="themeSel" aria-label="Visual theme" class="rv-theme"><option value="dark">Neon Dark</option><option value="light">Light Clean</option><option value="midnight">Midnight Purple</option><option value="aurora">Forest Aurora</option><option value="graphite">Graphite Pro</option><option value="neon">Ocean Blue</option></select>
+  </header>
+
+  <main>
+    <!-- ================= LIVE ================= -->
+    <section class="page on" id="p-live">
+      <div class="live">
+        <div class="stagewrap">
+          <div class="stage" id="stage">
+            <video id="cam" playsinline muted autoplay></video>
+            <canvas id="ov"></canvas>
+
+            <div class="empty" id="emptyPanel">
+              <div>
+                <div class="big"><svg class="ic" style="width:36px;height:36px"><use href="#i-radar"/></svg></div>
+                <h2>Ready to measure</h2>
+                <p>Put the phone on a tripod facing the road. Works for traffic coming, going or crossing. One tap turns on camera, GPS, compass, motion sensors and keeps the screen awake.</p>
+                <div class="row wrap" style="justify-content:center">
+                  <button class="btn pri" id="btnStart"><svg class="ic"><use href="#i-cam"/></svg>Start camera &amp; sensors</button>
+                  <button class="btn" id="btnSim"><svg class="ic"><use href="#i-bolt"/></svg>Simulation</button>
+                  <button class="btn" id="btnFile"><svg class="ic"><use href="#i-upload"/></svg>Analyse video</button>
+                </div>
+                <input type="file" id="fileIn" accept="video/*" hidden>
+              </div>
+            </div>
+
+            <div class="hud tl">
+              <span class="hchip" id="hStatus"><i class="dot" id="hDot"></i><span id="hStatusTxt">IDLE</span></span>
+              <span class="hchip" id="hModel" style="display:none">MODEL</span>
+              <span class="hchip" id="hFps">— FPS</span>
+              <span class="hchip" id="hGuard" style="display:none"></span>
+            </div>
+            <div class="hud tr"><div class="limit" id="limitSign"><div><span id="limitVal">120</span><small id="limitUnit">KM/H</small></div></div></div>
+            <div class="hud bl">
+              <span class="hchip" id="hGps">GPS —</span>
+              <span class="hchip" id="hAz">AZ —</span>
+              <span class="hchip" id="hPitch">PITCH —</span>
+            </div>
+            <div class="hud br">
+              <span class="hchip" id="hCal">CAL —</span>
+              <span class="hchip" id="hRoad">—</span>
+            </div>
+
+            <div class="alertbar" id="alertBar">
+              <div class="spd" id="alSpeed">--</div>
+              <div class="meta"><b style="color:#fff;font-size:14px" id="alTitle">OVER LIMIT</b><br><span id="alMeta"></span></div>
+            </div>
+            <div class="toast" id="toast"></div>
+          </div>
+
+          <div class="controls" id="controls">
+            <button class="btn" id="btnCal"><svg class="ic"><use href="#i-grid"/></svg>Calibrate zone</button>
+            <button class="btn" id="btnSnap"><svg class="ic"><use href="#i-snap"/></svg>Snapshot</button>
+            <button class="btn" id="btnTorch" style="display:none"><svg class="ic"><use href="#i-flash"/></svg>Torch</button>
+            <button class="btn red" id="btnStop" style="display:none"><svg class="ic"><use href="#i-stop"/></svg>Stop</button>
+          </div>
+
+          <div class="camrow" id="camRow">
+            <label class="field grow" id="zoomWrap" style="display:none"><span>Zoom <b id="zoomVal" class="mono">1.0×</b></span><input type="range" id="zoomRange" min="1" max="4" step="0.1" value="1"></label>
+            <label class="field grow"><span>Camera</span><select id="camSel"><option value="">Automatic · rear camera</option></select></label><button class="btn sm" id="btnScanCameras" type="button">↻ Scan cameras</button><span class="dim" id="camCount" style="font-size:11px">Allow camera permission to list lenses</span>
+            <div class="mono dim" id="camInfo" style="font-size:11.5px;flex:1 1 100%"></div>
+          </div>
+
+          <div class="card" id="calPanel" style="display:none;margin-top:10px">
+            <h3><svg class="ic sm"><use href="#i-grid"/></svg>Calibration – the most important step</h3>
+            <p class="muted" style="margin:0 0 10px;font-size:13px">Drag the four amber corners so they sit on a rectangle of <b>flat road</b> you can measure (e.g. lane edges and two painted marks, or cones). Corner order: bottom-left, bottom-right, top-right, top-left. Then enter the real width and length in metres. Speed accuracy depends on how exact these two numbers are.</p>
+            <div class="formgrid">
+              <label class="field"><span>Zone width (m)</span><input type="number" id="zoneW" inputmode="decimal" min="1" max="60" step="0.1"></label>
+              <label class="field"><span>Zone length (m)</span><input type="number" id="zoneD" inputmode="decimal" min="5" max="300" step="0.5"></label><div class="rv-assist"><h3>Assisted distance &amp; automatic zone</h3><p class="dim">Experimental geometry estimate, not AI depth sensing. Enter the physical phone mounting height, downward camera tilt and approximate vertical field of view (FOV). Requires a level road. Keep manual calibration for reliable results.</p><div class="row rv-assist-fields"><label class="field"><span>Height above road (m)</span><input id="mountHeight" type="number" min="0.5" max="20" step="0.1" value="2.5"></label><label class="field"><span>Downward tilt (°)</span><input id="mountPitch" type="number" min="6" max="84" step="1" value="30"></label><label class="field"><span>Vertical FOV (°)</span><input id="cameraFov" type="number" min="25" max="120" step="1" value="60"></label></div><div class="row"><button class="btn pri" id="btnEstimateZone" type="button">Estimate distance &amp; set zone</button><button class="btn" id="btnBuiltInZone" type="button">Built-in zone</button></div><p id="distanceEstimate" class="dim" aria-live="polite">Manual zone remains fully editable.</p></div>
+              <label class="field"><span>Known true speed (km/h)</span><input type="number" id="trueSpd" inputmode="decimal" min="5" max="250" placeholder="e.g. 60"></label>
+              <div class="field"><span>Fine-tune from a known pass</span><button class="btn sm" id="btnAutoCal">Apply to selected target</button></div>
+            </div>
+            <div class="hint" id="calMsg" style="margin-top:10px">Tip: tap a vehicle in the target list, then enter a speed you know (a car using cruise control at a known speed works well) to correct scale.</div>
+            <div class="row" style="margin-top:10px"><button class="btn pri" id="btnCalDone">Done</button><button class="btn" id="btnCalReset">Reset zone</button></div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="grid g2" style="gap:8px">
+            <div class="card stat"><div class="lbl">Tracked</div><div class="val" id="sTracked">0</div></div>
+            <div class="card stat"><div class="lbl">Avg speed</div><div class="val" id="sAvg">--</div><div class="sub" id="sAvgU">km/h</div></div>
+          </div>
+          <div class="card">
+            <h3><svg class="ic sm"><use href="#i-target"/></svg>Active targets <span class="pill gray" id="tgtCount">0</span></h3>
+            <div class="targets" id="targets"><div class="dim" style="font-size:13px" id="tgtEmpty">Scanning… vehicles that cross the calibrated zone appear here.</div></div>
+          </div>
+          <div class="card">
+            <h3><svg class="ic sm"><use href="#i-bolt"/></svg>Road &amp; speed limit</h3>
+            <select id="roadSel" style="margin-bottom:10px"></select>
+            <label class="field" style="margin-bottom:10px"><span>Traffic direction to flag</span><select id="dirSel"><option value="all">All directions</option><option value="toward">Oncoming (toward camera)</option><option value="away">Going away</option><option value="right">Crossing left → right</option><option value="left">Crossing right → left</option></select></label>
+            <div class="row wrap" id="limitChips"></div>
+            <div class="row" style="margin-top:8px"><input type="number" id="limitCustom" inputmode="numeric" min="10" max="200" placeholder="Custom limit (km/h)"><button class="btn sm" id="limitSet">Set</button></div>
+          </div>
+          <div class="card">
+            <h3><svg class="ic sm"><use href="#i-motion"/></svg>Phone sensors</h3>
+            <div class="sensors" id="sensGrid"></div>
+          </div>
+          <div class="dim" style="text-align:center;font-size:12px;padding:4px 0 10px">© 2026 RoadVision AI · Developed by Ibtasam</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ANALYTICS ================= -->
+    <section class="page" id="p-analytics">
+      <div class="grid g4">
+        <div class="card stat"><div class="lbl">Vehicles measured</div><div class="val" id="aScanned">0</div><div class="sub">this device</div></div>
+        <div class="card stat red"><div class="lbl">Over limit</div><div class="val" id="aViol">0</div><div class="sub">logged events</div></div>
+        <div class="card stat green"><div class="lbl">Compliance</div><div class="val" id="aComp">100%</div><div class="sub">within limit</div></div>
+        <div class="card stat amber"><div class="lbl">Mean speed</div><div class="val" id="aMean">0</div><div class="sub" id="aTop">—</div></div>
+      </div>
+      <div class="grid g2d" style="margin-top:12px">
+        <div class="card"><h3>Speed distribution</h3><div class="chartbox"><canvas id="chSpeed"></canvas></div></div>
+        <div class="card"><h3>Violations by location</h3><div class="chartbox"><canvas id="chRoad"></canvas></div></div>
+      </div>
+      <h3 style="margin:18px 0 8px;color:var(--tx2)">Recent infractions</h3>
+      <div class="tablewrap"><table><thead><tr><th>Time</th><th>Plate</th><th>Vehicle</th><th>Speed</th><th>Limit</th><th>Excess</th><th>Location</th></tr></thead><tbody id="recentBody"></tbody></table></div>
+    </section>
+
+    <!-- ================= MAP ================= -->
+    <section class="page" id="p-map">
+      <div class="row sb wrap" style="margin-bottom:8px"><div class="muted" style="font-size:13px">Reference road points, your GPS position and geotagged events.</div><button class="btn sm" id="btnLocate"><svg class="ic sm"><use href="#i-gps"/></svg>My location</button></div>
+      <div id="map"></div>
+      <div class="grid g2d" id="roadCards" style="margin-top:12px"></div>
+    </section>
+
+    <!-- ================= RECORDS ================= -->
+    <section class="page" id="p-records">
+      <div class="filters">
+        <input type="search" id="fltSearch" placeholder="Search plate, make, model, road…">
+        <div class="seg" id="fltSeg"><button data-f="all" class="on">All</button><button data-f="over">Over limit</button><button data-f="ok">Compliant</button></div>
+        <div style="flex:1"></div>
+        <button class="btn sm" id="btnCSV"><svg class="ic sm"><use href="#i-dl"/></svg>CSV</button>
+        <button class="btn sm" id="btnJSON"><svg class="ic sm"><use href="#i-dl"/></svg>JSON</button>
+      </div>
+      <div class="tablewrap"><table><thead><tr><th></th><th>Time</th><th>Plate</th><th>Vehicle</th><th>Speed</th><th>Limit</th><th>Location</th><th>Indicative fine</th><th></th></tr></thead><tbody id="recBody"></tbody></table></div>
+      <div class="dim" style="font-size:12px;margin-top:8px" id="recCount"></div>
+    </section>
+
+    <!-- ================= OPERATOR ================= -->
+    <section class="page" id="p-operator">
+      <div class="grid g2d">
+        <div class="card">
+          <h3><svg class="ic sm"><use href="#i-user"/></svg>Operator session</h3>
+          <div class="formgrid">
+            <label class="field"><span>Operator name</span><input type="text" id="opName" placeholder="Your name"></label>
+            <label class="field"><span>Terminal / device ID</span><input type="text" id="opTerminal" placeholder="e.g. PHONE-01"></label>
+            <div class="field"><span>Session started</span><div class="mono" id="opStart">—</div></div>
+            <div class="field"><span>Status</span><div class="mono" id="opStatus">Idle</div></div>
+          </div>
+          <div class="hint" style="margin-top:12px">This is an independent measurement tool. It is <b>not</b> certified or connected to any traffic authority, and its reports are not official citations.</div>
+        </div>
+        <div class="card">
+          <h3>Session metrics</h3>
+          <div class="grid g2" style="gap:8px">
+            <div><div class="lbl dim" style="font-size:11px">Events logged</div><div class="big-num" id="opReports">0</div></div>
+            <div><div class="lbl dim" style="font-size:11px">Indicative fines</div><div class="big-num" id="opFines">0</div></div>
+            <div><div class="lbl dim" style="font-size:11px">Max speed</div><div class="big-num" id="opMax">--</div></div>
+            <div><div class="lbl dim" style="font-size:11px">Measured</div><div class="big-num" id="opMeasured">0</div></div>
+          </div>
+        </div>
+      </div>
+      <h3 style="margin:16px 0 8px;color:var(--tx2)">Quick actions</h3>
+      <div class="list">
+        <button class="li" id="qaDocket"><span class="ico"><svg class="ic"><use href="#i-list"/></svg></span><span><b>Review records</b><br><span class="dim" style="font-size:12.5px">Check each event and annotate the plate / vehicle</span></span></button>
+        <button class="li" id="qaSummary"><span class="ico"><svg class="ic"><use href="#i-print"/></svg></span><span><b>Session summary (print / PDF)</b><br><span class="dim" style="font-size:12.5px">Counts, peak speeds and the event list</span></span></button>
+      </div>
+    </section>
+
+    <!-- ================= SETTINGS ================= -->
+    <section class="page" id="p-settings">
+      <div class="grid g2d">
+        <div class="card">
+          <h3>Measurement</h3>
+          <div class="setrow"><div><div class="t">Speed unit</div><div class="d">Display unit (limits are stored in km/h)</div></div><div class="seg" id="unitSeg"><button data-u="kmh" class="on">km/h</button><button data-u="mph">mph</button></div></div>
+          <div class="setrow" style="display:block"><div class="row sb"><div><div class="t">Scale correction</div><div class="d">Multiplies every measured speed (0.5×–1.5×)</div></div><b class="mono" id="factorVal">1.00×</b></div><input type="range" id="factor" min="0.5" max="1.5" step="0.01" value="1"></div>
+          <div class="setrow"><div><div class="t">Tolerance (km/h)</div><div class="d">Speed must exceed limit + tolerance to be logged</div></div><input type="number" id="tol" style="width:84px" min="0" max="30" step="1" inputmode="numeric"></div>
+          <div class="setrow"><div><div class="t">Minimum confidence</div><div class="d">Readings below this are never logged as violations</div></div><input type="number" id="minConf" style="width:84px" min="30" max="95" step="5" inputmode="numeric"></div>
+          <div class="setrow"><div><div class="t">Show calibration grid</div><div class="d">Perspective grid on the camera view</div></div><label class="sw"><input type="checkbox" id="gridChk"><i></i></label></div>
+        </div>
+        <div class="card">
+          <h3>Camera &amp; detection</h3>
+          <div class="setrow"><div><div class="t">Detection model</div><div class="d">Built-in works offline with no download. Lite is smaller and faster on weak phones.</div></div><select id="modelSel" style="width:170px"><option value="local">Built-in (recommended)</option><option value="lite">Lite (faster, online)</option></select></div>
+          <div class="setrow"><div><div class="t">Detection resolution</div><div class="d">Frame width fed to the model</div></div><select id="detRes" style="width:150px"><option value="416">416 px</option><option value="512">512 px</option><option value="640">640 px</option><option value="800">800 px</option><option value="1024">1024 px</option></select></div>
+          <div class="setrow"><div><div class="t">Focus detection on the zone</div><div class="d">Crops to the calibrated area so far vehicles get more pixels (more accurate)</div></div><label class="sw"><input type="checkbox" id="roiChk"><i></i></label></div>
+          <div class="setrow"><div><div class="t">Camera resolution</div><div class="d">Applied when the camera starts</div></div><select id="resSel" style="width:150px"><option value="720">720p · 60 fps</option><option value="1080">1080p · 60 fps</option><option value="2160">4K · 30 fps</option></select></div>
+          <div class="setrow"><div><div class="t">Display frame rate</div><div class="d">Render loop cap (detections run separately)</div></div><select id="fpsSel" style="width:150px"><option value="60">60 FPS</option><option value="30">30 FPS (saver)</option></select></div>
+        </div>
+        <div class="card">
+          <h3>Alerts &amp; sensors</h3>
+          <div class="setrow"><div><div class="t">Audio chime on violation</div><div class="d">880 Hz radar tone</div></div><label class="sw"><input type="checkbox" id="audioChk"><i></i></label></div>
+          <div class="setrow"><div><div class="t">Vibrate on violation</div><div class="d">Phones that support the Vibration API</div></div><label class="sw"><input type="checkbox" id="vibChk"><i></i></label></div>
+          <div class="setrow"><div><div class="t">Keep screen awake</div><div class="d">Screen Wake Lock while measuring</div></div><label class="sw"><input type="checkbox" id="wakeChk"><i></i></label></div>
+          <div class="setrow"><div><div class="t">Steady-phone guard</div><div class="d">Ignores samples while the phone shakes or is moving (recommended)</div></div><label class="sw"><input type="checkbox" id="guardChk"><i></i></label></div>
+          <div class="setrow"><div><div class="t">Auto-select nearest road</div><div class="d">Uses GPS to pick a known road / limit within 3 km</div></div><label class="sw"><input type="checkbox" id="autoRoad"><i></i></label></div>
+          <div class="setrow"><div><div class="t">Geotag events</div><div class="d">Store GPS position with each event</div></div><label class="sw"><input type="checkbox" id="geoChk"><i></i></label></div>
+          <div style="margin-top:8px"><button class="btn sm" id="btnPerm"><svg class="ic sm"><use href="#i-motion"/></svg>Enable GPS &amp; motion sensors</button></div>
+        </div>
+        <div class="card">
+          <h3>Indicative fine tariff (KWD)</h3>
+          <p class="dim" style="margin:0 0 8px;font-size:12.5px">Editable estimate only. Always check the current official tariff.</p>
+          <div class="formgrid">
+            <label class="field"><span>Excess ≤ A km/h</span><input type="number" id="ta" min="1" max="100"></label>
+            <label class="field"><span>Fine tier 1</span><input type="number" id="t1" min="0"></label>
+            <label class="field"><span>Excess ≤ B km/h</span><input type="number" id="tb" min="1" max="200"></label>
+            <label class="field"><span>Fine tier 2</span><input type="number" id="t2" min="0"></label>
+            <div></div>
+            <label class="field"><span>Above B: tier 3</span><input type="number" id="t3" min="0"></label>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Data</h3>
+          <div class="setrow"><div><div class="t">Clear all records</div><div class="d">Deletes every saved event and passage from this device</div></div><button class="btn red sm" id="btnClear"><svg class="ic sm"><use href="#i-trash"/></svg>Clear</button></div>
+          <div class="setrow"><div><div class="t">Reset detection model cache</div><div class="d">Re-downloads the model on next start</div></div><button class="btn sm" id="btnModelReset">Reset</button></div>
+          <div class="dim" style="font-size:12px;margin-top:10px">Everything stays on this device. Camera frames are processed locally and never uploaded.</div>
+        </div>
+        <div class="card">
+          <h3>Accuracy &amp; limits</h3>
+          <div class="dim" style="font-size:13px;line-height:1.55">Speed is computed from a camera-to-road calibration, not from radar or laser. Typical error is a few km/h when the zone is measured carefully, the phone is on a tripod and the vehicle is tracked for at least one second. It is not a certified or legal speed measurement. Plates are not read automatically – annotate them by hand in Records.</div>
+        </div>
+      </div>
+      <div class="credit"><img src="./icons/icon-192.png" width="44" height="44" alt="RoadVision AI icon"><div><b>RoadVision AI</b><br>© 2026 Developed by Ibtasam. All rights reserved.</div></div>
+    </section>
+  </main>
+
+  <nav class="tabs" id="tabs">
+    <button class="on" data-tab="live"><svg class="ic"><use href="#i-radar"/></svg>Live</button>
+    <button data-tab="analytics"><svg class="ic"><use href="#i-chart"/></svg>Stats</button>
+    <button data-tab="map"><svg class="ic"><use href="#i-map"/></svg>Map</button>
+    <button data-tab="records"><svg class="ic"><use href="#i-list"/></svg>Records<span class="badge" id="recBadge">0</span></button>
+    <button data-tab="operator"><svg class="ic"><use href="#i-user"/></svg>Operator</button>
+    <button data-tab="settings"><svg class="ic"><use href="#i-gear"/></svg>Settings</button>
+  </nav>
+</div>
+
+<!-- edit / annotate modal -->
+<div class="modal" id="mEdit" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="row sb"><h2>Annotate event</h2><button class="btn sm" data-close aria-label="Close"><svg class="ic sm"><use href="#i-x"/></svg></button></div>
+    <div class="row" style="gap:14px;margin-bottom:12px;align-items:flex-start">
+      <img id="eThumb" class="thumb" style="width:120px;height:80px" alt="">
+      <div><div class="big-num" id="eSpeed">--</div><div class="dim mono" style="font-size:12px" id="eMeta"></div></div>
+    </div>
+    <div class="formgrid">
+      <label class="field full"><span>Find vehicle (type make / model)</span><input type="search" id="eSearch" placeholder="e.g. land cruiser, camry, patrol, sierra…" list="eHits" autocomplete="off"><datalist id="eHits"></datalist></label>
+      <label class="field"><span>Make</span><select id="eMake"></select></label>
+      <label class="field"><span>Model</span><select id="eModel"></select></label>
+      <label class="field"><span>Year</span><select id="eYear"></select></label>
+      <label class="field"><span>Colour</span><select id="eColor"></select></label>
+      <label class="field"><span>Plate code</span><input type="text" id="eCode" inputmode="numeric" maxlength="3" list="codeList"><datalist id="codeList"></datalist></label>
+      <label class="field"><span>Plate number</span><input type="text" id="eNum" inputmode="numeric" maxlength="7"></label>
+      <label class="field full"><span>Notes</span><textarea id="eNotes" rows="2"></textarea></label>
+    </div>
+    <div class="row wrap" style="margin-top:14px">
+      <button class="btn pri" id="eSave">Save</button>
+      <button class="btn" id="eReport"><svg class="ic sm"><use href="#i-print"/></svg>Evidence report</button>
+      <div style="flex:1"></div>
+      <button class="btn red" id="eDelete"><svg class="ic sm"><use href="#i-trash"/></svg>Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- report modal -->
+<div class="modal" id="mReport" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="row sb"><h2>Speed evidence report</h2><button class="btn sm" data-close aria-label="Close"><svg class="ic sm"><use href="#i-x"/></svg></button></div>
+    <div id="reportBody"></div>
+    <div class="row" style="margin-top:12px"><button class="btn pri" id="btnPrint"><svg class="ic sm"><use href="#i-print"/></svg>Print / Save PDF</button></div>
+  </div>
+</div>
+
+<div id="printarea"></div>
+
+<script src="./vendor/leaflet/leaflet.js"></script>
+<script src="./js/core.js"></script>
+<script src="./js/data.js"></script>
+<script src="./js/sensors.js"></script>
+<script src="./js/app.js"></script>
+</body>
+</html>
